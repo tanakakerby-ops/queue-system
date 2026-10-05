@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Book - QueueEase</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="services.html">Services</a>
+    <a href="book.html">Book</a>
+    <a href="queue.html">Queue</a>
+    <a href="staff.html">Staff</a>
+    <a href="about.html">About</a>
+  </nav>
+
+  <main>
+    <h1>Book an Appointment</h1>
+
+    <div class="card" id="formBox">
+      <form onsubmit="return bookAppointment()">
+        <label>Your name</label>
+        <input type="text" id="name" required maxlength="50" placeholder="Juan Dela Cruz">
+
+        <label>Service</label>
+        <select id="service">
+          <option>General Consultation</option>
+          <option>Document Processing</option>
+          <option>Payment / Cashier</option>
+        </select>
+
+        <!-- Range slider -->
+        <label>Number of people: <span id="peopleText">1</span></label>
+        <input type="range" id="people" min="1" max="5" value="1" oninput="updatePeopleText()">
+
+        <label>Preferred date</label>
+        <input type="date" id="date" required>
+
+        <label>Preferred time</label>
+        <input type="time" id="time" required>
+
+        <label><input type="checkbox" id="priority">Priority lane (senior citizen, PWD, pregnant)</label>
+
+        <br>
+        <button type="submit" id="submitBtn">Get my queue number</button>
+      </form>
+    </div>
+
+    <!-- This ticket shows after booking -->
+    <div class="card ticket hidden" id="ticket">
+      <h2>Your Queue Ticket</h2>
+      <div class="big-number" id="ticketNumber"></div>
+      <p id="ticketInfo"></p>
+      <p id="ticketWait"></p>
+      <p><b>Remember your number!</b> Use it on the Queue page to check your turn.</p>
+      <a class="btn" href="queue.html">Watch the live queue</a>
+    </div>
+  </main>
+
+  <footer>QueueEase - School Project</footer>
+
+  <!-- Supabase library (gives us "supabase"), then our settings, then our code. Order matters! -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="script.js"></script>
+  <script>
+    // Show the slider value as the user moves the slider
+    function updatePeopleText() {
+      var value = document.getElementById("people").value;
+      document.getElementById("peopleText").textContent = value;
+    }
+
+    // Runs when the form is submitted
+    function bookAppointment() {
+      // stop double clicking (which would book two numbers)
+      document.getElementById("submitBtn").disabled = true;
+
+      // 1. Make a new person (the database will give the number)
+      var person = {
+        name: document.getElementById("name").value,
+        service: document.getElementById("service").value,
+        people: Number(document.getElementById("people").value),
+        appt_date: document.getElementById("date").value,
+        appt_time: document.getElementById("time").value,
+        priority: document.getElementById("priority").checked,
+        status: "waiting"
+      };
+
+      // 2. Save to the database. If it works, the first function runs.
+      //    If it fails, the second function turns the button back on.
+      addPerson(person, function (savedPerson) {
+
+        // 3. Read the queue once to count the people ahead
+        loadQueue(function (queue) {
+          var ahead = peopleAhead(queue, savedPerson.number);
+          var minutes = ahead * 10; // we say each person takes about 10 minutes
+
+          // 4. Show the ticket instead of the form
+          document.getElementById("formBox").className = "card hidden";
+          document.getElementById("ticket").className = "card ticket";
+          document.getElementById("ticketNumber").textContent = formatNumber(savedPerson.number);
+          document.getElementById("ticketInfo").textContent = savedPerson.name + " - " + savedPerson.service;
+          document.getElementById("ticketWait").textContent =
+            "People ahead of you: " + ahead + " | Estimated wait: " + minutes + " minutes";
+        });
+
+      }, function () {
+        document.getElementById("submitBtn").disabled = false;
+      });
+
+      return false; // false = do not reload the page
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+/* ===== Basic look ===== */
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial, sans-serif; background: #f2f6fb; color: #223; }
+nav { background: #1d4ed8; padding: 12px; text-align: center; }
+nav a { color: white; text-decoration: none; margin: 0 8px; font-weight: bold; display: inline-block; padding: 4px 0; }
+nav a:hover { text-decoration: underline; }
+main { max-width: 900px; margin: 20px auto; padding: 0 16px; }
+h1, h2 { color: #1d4ed8; }
+.card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.1); margin-bottom: 16px; }
+footer { text-align: center; padding: 20px; color: #667; font-size: 14px; }
+
+/* ===== Buttons and forms ===== */
+button, .btn { background: #1d4ed8; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 16px; cursor: pointer; text-decoration: none; display: inline-block; margin: 2px; }
+button:hover, .btn:hover { background: #1e40af; }
+button.red { background: #dc2626; }
+button.green { background: #16a34a; }
+label { display: block; margin-top: 12px; font-weight: bold; }
+input, select { width: 100%; padding: 10px; margin-top: 4px; border: 1px solid #aab; border-radius: 8px; font-size: 16px; }
+input[type=range] { padding: 0; }
+input[type=checkbox] { width: auto; margin-right: 8px; }
+
+/* ===== Slider ===== */
+.slider { position: relative; overflow: hidden; border-radius: 12px; margin-bottom: 20px; background: white; }
+.slide { display: none; padding: 50px 24px; text-align: center; color: white; }
+.slide h2 { color: white; margin-top: 0; }
+.s1 { background: #2563eb; } .s2 { background: #0d9488; } .s3 { background: #7c3aed; }
+.arrow { position: absolute; top: 40%; background: rgba(0,0,0,.4); padding: 8px 14px; }
+.prev { left: 8px; } .next { right: 8px; }
+.dots { text-align: center; padding: 8px; }
+.dot { width: 12px; height: 12px; padding: 0; border-radius: 50%; background: #bbb; margin: 0 4px; }
+.dot.active { background: #1d4ed8; }
+
+/* ===== Queue ===== */
+.big-number { font-size: 64px; font-weight: bold; color: #16a34a; text-align: center; }
+.stats { display: flex; gap: 12px; }
+.stat { flex: 1; background: #eef3ff; border-radius: 10px; padding: 12px; text-align: center; }
+.stat b { display: block; font-size: 28px; color: #1d4ed8; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+.tag { padding: 3px 10px; border-radius: 12px; font-size: 13px; color: white; }
+.waiting { background: #f59e0b; } .serving { background: #16a34a; } .done { background: #6b7280; }
+.priority { background: #dc2626; }
+.ticket { text-align: center; border: 3px dashed #1d4ed8; }
+.hidden { display: none; }
+.result { margin-top: 12px; padding: 12px; background: #fff7e0; border-radius: 8px; }
+
+/* ===== Next-in-line boxes (4 per row) ===== */
+.next-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.next-box { background: #eef3ff; border-radius: 10px; padding: 14px 4px; text-align: center; font-weight: bold; font-size: 20px; color: #1d4ed8; }
+.next-box small { display: block; font-weight: normal; font-size: 12px; color: #556; margin-top: 4px; }
+.next-box.prio { background: #fee2e2; color: #b91c1c; }

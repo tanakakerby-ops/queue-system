@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Staff - QueueEase</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="services.html">Services</a>
+    <a href="book.html">Book</a>
+    <a href="queue.html">Queue</a>
+    <a href="staff.html">Staff</a>
+    <a href="about.html">About</a>
+  </nav>
+
+  <main>
+    <h1>Staff Panel</h1>
+
+    <!-- PIN box: shown first -->
+    <div class="card" id="lockBox">
+      <h2>Staff Login</h2>
+      <form onsubmit="return checkPin()">
+        <label>Enter staff PIN</label>
+        <input type="password" id="pinInput">
+        <br><br>
+        <button type="submit">Unlock</button>
+      </form>
+      <p id="pinMessage"></p>
+    </div>
+
+    <!-- Staff panel: hidden until the PIN is correct -->
+    <div id="staffPanel" class="hidden">
+      <div class="card">
+        <h2>Now Serving</h2>
+        <div class="big-number" id="nowServing">---</div>
+        <p style="text-align:center" id="servingName"></p>
+
+        <div class="stats">
+          <div class="stat"><b id="waitingCount">0</b>Waiting</div>
+          <div class="stat"><b id="doneCount">0</b>Served</div>
+        </div>
+        <br>
+        <div style="text-align:center">
+          <button class="green" onclick="callNext()">Call Next</button>
+          <button onclick="finishCurrent()">Finish Current</button>
+          <button class="red" onclick="clearAll()">Clear All</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>All Appointments</h2>
+        <table>
+          <thead><tr><th>No.</th><th>Name</th><th>Service</th><th>Date / Time</th><th>Status</th></tr></thead>
+          <tbody id="list"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <footer>QueueEase - School Project</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="script.js"></script>
+  <script>
+    // The PIN the staff typed. We keep it so the buttons can send it to the database.
+    // (The REAL PIN is stored in the database, not in this page.)
+    var staffPin = "";
+
+    // The latest queue from the database (updated automatically)
+    var currentQueue = [];
+
+    // Runs when the PIN form is submitted
+    function checkPin() {
+      if (db === null) { return false; }
+
+      var typed = document.getElementById("pinInput").value;
+
+      // Ask the DATABASE if the PIN is correct
+      db.rpc("check_pin", { p_pin: typed }).then(function (result) {
+        if (result.error) {
+          document.getElementById("pinMessage").textContent = "Error: " + result.error.message;
+        } else if (result.data === true) {
+          staffPin = typed;
+          document.getElementById("lockBox").className = "card hidden";
+          document.getElementById("staffPanel").className = "";
+
+          // Start listening ONLY after unlocking
+          listenToQueue(function (queue) {
+            currentQueue = queue;
+            showStaff(queue);
+          });
+        } else {
+          document.getElementById("pinMessage").textContent = "Wrong PIN. Try again.";
+        }
+      });
+
+      return false; // do not reload the page
+    }
+
+    // Reload the data right now (used after a button is pressed)
+    function refreshNow() {
+      loadQueue(function (queue) {
+        currentQueue = queue;
+        showStaff(queue);
+      });
+    }
+
+    // Button: Finish Current
+    function finishCurrent() {
+      staffAction("finish_current", staffPin, refreshNow);
+    }
+
+    // Button: Call Next (finishes the current person, then calls the next one)
+    function callNext() {
+      if (countStatus(currentQueue, "waiting") === 0) {
+        alert("No one is waiting.");
+      }
+      staffAction("call_next", staffPin, refreshNow);
+    }
+
+    // Button: Clear All
+    function clearAll() {
+      var sure = confirm("Delete the whole queue?");
+      if (sure === true) {
+        staffAction("clear_all", staffPin, refreshNow);
+      }
+    }
+
+    // Fill the page with the latest data
+    function showStaff(queue) {
+      var serving = findServing(queue);
+
+      if (serving === null) {
+        document.getElementById("nowServing").textContent = "---";
+        document.getElementById("servingName").textContent = "Nobody yet";
+      } else {
+        document.getElementById("nowServing").textContent = formatNumber(serving.number);
+        document.getElementById("servingName").textContent = serving.name;
+      }
+
+      document.getElementById("waitingCount").textContent = countStatus(queue, "waiting");
+      document.getElementById("doneCount").textContent = countStatus(queue, "done");
+
+      var html = "";
+      for (var i = 0; i < queue.length; i++) {
+        var p = queue[i];
+        var tag = "";
+        if (p.priority === true) {
+          tag = " <span class='tag priority'>priority</span>";
+        }
+        html = html + "<tr><td>" + formatNumber(p.number) + "</td><td>" + escapeText(p.name) + tag +
+               "</td><td>" + escapeText(p.service) + "</td><td>" + escapeText(p.appt_date) + " " + escapeText(p.appt_time) +
+               "</td><td><span class='tag " + escapeText(p.status) + "'>" + escapeText(p.status) + "</span></td></tr>";
+      }
+      document.getElementById("list").innerHTML = html;
+    }
+  </script>
+</body>
+</html>

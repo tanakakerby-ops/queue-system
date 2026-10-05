@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home - QueueEase</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="services.html">Services</a>
+    <a href="book.html">Book</a>
+    <a href="queue.html">Queue</a>
+    <a href="staff.html">Staff</a>
+    <a href="about.html">About</a>
+  </nav>
+
+  <main>
+    <h1>Welcome to QueueEase</h1>
+
+    <!-- SLIDER 1: Home banner -->
+    <div class="slider">
+      <div class="slide s1"><h2>No more long lines</h2><p>Book your appointment online.</p></div>
+      <div class="slide s2"><h2>Get your queue number</h2><p>Know when it is your turn.</p></div>
+      <div class="slide s3"><h2>Watch the live queue</h2><p>See who is being served right now.</p></div>
+
+      <button class="arrow prev" onclick="previousSlide()">&#10094;</button>
+      <button class="arrow next" onclick="nextSlide()">&#10095;</button>
+
+      <div class="dots">
+        <button class="dot" onclick="showSlide(0)"></button>
+        <button class="dot" onclick="showSlide(1)"></button>
+        <button class="dot" onclick="showSlide(2)"></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Quick links</h2>
+      <a class="btn" href="book.html">Book an appointment</a>
+      <a class="btn" href="queue.html">View live queue</a>
+    </div>
+  </main>
+
+  <footer>QueueEase - School Project</footer>
+  <script src="script.js"></script>
+</body>
+</html>

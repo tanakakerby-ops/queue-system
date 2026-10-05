@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Services - QueueEase</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="services.html">Services</a>
+    <a href="book.html">Book</a>
+    <a href="queue.html">Queue</a>
+    <a href="staff.html">Staff</a>
+    <a href="about.html">About</a>
+  </nav>
+
+  <main>
+    <h1>Our Services</h1>
+
+    <!-- SLIDER 2: Services -->
+    <div class="slider">
+      <div class="slide s1"><h2>General Consultation</h2><p>Talk to our staff about your concern.</p></div>
+      <div class="slide s2"><h2>Document Processing</h2><p>Submit and claim your documents.</p></div>
+      <div class="slide s3"><h2>Payment / Cashier</h2><p>Pay your fees quickly.</p></div>
+
+      <button class="arrow prev" onclick="previousSlide()">&#10094;</button>
+      <button class="arrow next" onclick="nextSlide()">&#10095;</button>
+
+      <div class="dots">
+        <button class="dot" onclick="showSlide(0)"></button>
+        <button class="dot" onclick="showSlide(1)"></button>
+        <button class="dot" onclick="showSlide(2)"></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <p>Pick a service, then go to the booking page to get your queue number.</p>
+      <a class="btn" href="book.html">Book now</a>
+    </div>
+  </main>
+
+  <footer>QueueEase - School Project</footer>
+  <script src="script.js"></script>
+</body>
+</html>

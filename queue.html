@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Live Queue - QueueEase</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="services.html">Services</a>
+    <a href="book.html">Book</a>
+    <a href="queue.html">Queue</a>
+    <a href="staff.html">Staff</a>
+    <a href="about.html">About</a>
+  </nav>
+
+  <main>
+    <h1>Live Queue</h1>
+
+    <div class="card">
+      <h2 style="text-align:center">Now Serving</h2>
+      <div class="big-number" id="nowServing">---</div>
+      <div class="stats">
+        <div class="stat"><b id="waitingCount">0</b>Waiting</div>
+        <div class="stat"><b id="doneCount">0</b>Served</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Check my number</h2>
+      <label>Type your queue number (example: 3)</label>
+      <input type="number" id="myNumber" min="1">
+      <br><br>
+      <button onclick="checkMyNumber()">Check</button>
+      <div class="result hidden" id="checkResult"></div>
+    </div>
+
+    <div class="card">
+      <h2>Next in line</h2>
+      <div class="next-grid" id="list"></div>
+      <p id="empty">No one is waiting.</p>
+    </div>
+  </main>
+
+  <footer>QueueEase - School Project</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="script.js"></script>
+  <script>
+    // The latest queue from the database (updated automatically)
+    var currentQueue = [];
+
+    // Build one small box (number + name) for one waiting person
+    function makeBox(person) {
+      var style = "next-box";
+      if (person.priority === true) {
+        style = "next-box prio"; // priority people get a red box
+      }
+      return "<div class='" + style + "'>" + formatNumber(person.number) +
+             "<small>" + escapeText(person.name) + "</small></div>";
+    }
+
+    // Fill the page with the latest queue
+    function showQueue(queue) {
+      var serving = findServing(queue);
+      var line = getWaitingInOrder(queue);
+      var html = "";
+
+      // Now serving number
+      if (serving === null) {
+        document.getElementById("nowServing").textContent = "---";
+      } else {
+        document.getElementById("nowServing").textContent = formatNumber(serving.number);
+      }
+
+      // The waiting line in order
+      for (var i = 0; i < line.length; i++) {
+        html = html + makeBox(line[i]);
+      }
+
+      document.getElementById("list").innerHTML = html;
+      document.getElementById("waitingCount").textContent = line.length;
+      document.getElementById("doneCount").textContent = countStatus(queue, "done");
+
+      if (html === "") {
+        document.getElementById("empty").style.display = "block";
+      } else {
+        document.getElementById("empty").style.display = "none";
+      }
+    }
+
+    // Runs when the "Check" button is clicked
+    function checkMyNumber() {
+      var typed = Number(document.getElementById("myNumber").value);
+      var person = findByNumber(currentQueue, typed);
+      var box = document.getElementById("checkResult");
+      var message = "";
+
+      if (typed < 1) {
+        message = "Please type your queue number.";
+      } else if (person === null) {
+        message = "Sorry, that number was not found.";
+      } else if (person.status === "serving") {
+        message = "It is your turn now, " + person.name + "! Please go to the counter.";
+      } else if (person.status === "done") {
+        message = "You were already served. Thank you!";
+      } else {
+        var ahead = peopleAhead(currentQueue, typed);
+        message = "Hi " + person.name + "! People ahead of you: " + ahead +
+                  ". Estimated wait: about " + (ahead * 10) + " minutes.";
+      }
+
+      box.textContent = message;
+      box.className = "result"; // remove "hidden" so the message shows
+    }
+
+    // Start listening. This function runs now, and again EVERY time the database changes.
+    listenToQueue(function (queue) {
+      currentQueue = queue;
+      showQueue(queue);
+    });
+  </script>
+</body>
+</html>
