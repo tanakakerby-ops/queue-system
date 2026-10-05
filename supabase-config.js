@@ -8,7 +8,7 @@ var SUPABASE_KEY = "sb_publishable_Z7JvUZm4YQElIRzFJK_Fnw_YsqF9CYe";
 // "db" is our connection to the online database. All pages use it.
 var db = null;
 
-if (SUPABASE_URL === "https://elyepzakacqablezvqlg.supabase.co") {
+if (SUPABASE_URL === "PASTE_YOUR_PROJECT_URL") {
   // The settings were not pasted yet, so remind the user
   alert("Setup needed: open supabase-config.js and paste your Supabase values. See SETUP.md.");
 } else {
